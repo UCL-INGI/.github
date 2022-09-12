@@ -108,16 +108,11 @@ jobs:
           sudo systemctl start mongod
           sudo systemctl start docker
       
-      # TODO: remove when patches are merged in main repo
-      - name: "[TMP] Get default installer patch"
-        if: steps.cache-inginious.outputs.cache-hit != 'true'
-        run: git -C ${INGINIOUS} checkout default_installer
-
       - name: Install INGInious
         if: steps.cache-inginious.outputs.cache-hit != 'true'
         run: |
           cd ${INGINIOUS}
-          ./inginious-install --default True
+          ./inginious-install --default
           
       - name: Add current repo in course list
         run: ln -s ${GITHUB_WORKSPACE} ${INGINIOUS}/tasks/${REPO_NAME}
