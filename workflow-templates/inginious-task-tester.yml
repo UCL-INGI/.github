@@ -48,10 +48,9 @@ jobs:
           path: ${{ env.INGINIOUS }}
           key: ${{ runner.os }}-inginious
       
-      # TODO: change to main INGInious repo when patches are merged
       - name: Get INGInious
         if: steps.cache-inginious.outputs.cache-hit != 'true'
-        run: git clone https://github.com/nrybowski/INGInious ${INGINIOUS}
+        run: git clone https://github.com/UCL-INGI/INGInious.git ${INGINIOUS}
         
       # Get INGInious containers
       - name: Cache INGInious containers
@@ -117,11 +116,6 @@ jobs:
       - name: Add current repo in course list
         run: ln -s ${GITHUB_WORKSPACE} ${INGINIOUS}/tasks/${REPO_NAME}
       
-      # TODO: remove when patches are merged in main repo
-      - name: "[TMP] Get task tester patch"
-        if: steps.cache-inginious.outputs.cache-hit != 'true'
-        run:  git -C ${INGINIOUS} checkout task_test
-        
       # Build INGInious containers
       - name: Cache INGInious images
         id: cache-inginious-images
@@ -137,12 +131,6 @@ jobs:
       - name: Load INGInious Images
         if: steps.cache-inginious-images.outputs.cache-hit == 'true'
         run: docker load --input ${INGINIOUS_IMAGES}
-        
-      # TODO: remove when patches are merged in main repo
-      - name: "[TMP] Get latest task tester script"
-        run: |
-          wget https://raw.githubusercontent.com/nrybowski/INGInious/task_test/utils/task_tester/inginious-test-task
-          mv inginious-test-task ${INGINIOUS}/utils/task_tester
         
       - name: Re-playing old submissions
         run: python3 ${INGINIOUS}/utils/task_tester/inginious-test-task -p ${PLUGIN_NAMES} -c ${INGINIOUS}/configuration.yaml ${REPO_NAME}
